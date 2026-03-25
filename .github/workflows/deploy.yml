@@ -1,0 +1,62 @@
+name: CD - Deploy to Production
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to Elastika VPS
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Deploy via SSH (Orquestador)
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.TRACKING_VPS_HOST }}
+          username: ${{ secrets.TRACKING_VPS_USER }}
+          key: ${{ secrets.TRACKING_VPS_SSH_KEY }}
+          port: 22
+          command_timeout: 10m
+          script: |
+            set -e
+
+            APP_DIR="${{ secrets.TRACKING_VPS_APP_DIR }}"
+            export VPS_APP_DIR="$APP_DIR"
+            export PATH="/usr/local/php82/bin:/usr/local/bin:$PATH"
+
+            cd "$APP_DIR"
+
+            # 1. Pull código
+            git fetch origin main
+            git reset --hard origin/main
+
+            # 2. Ejecutar orquestador sin pull redundante
+            chmod +x deploy/orchestrate.sh
+            bash deploy/orchestrate.sh deploy --skip-pull
+
+      - name: Health check (production URL)
+        run: |
+          sleep 5
+          API_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 https://api.nautic.run/up 2>/dev/null || echo "000")
+          echo "API health: HTTP $API_CODE"
+          if [ "$API_CODE" = "200" ]; then
+            echo "Production API OK"
+          else
+            echo "WARN: API returned HTTP $API_CODE (may need DNS/SSL check)"
+          fi
