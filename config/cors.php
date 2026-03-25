@@ -17,6 +17,8 @@ return [
     */
     'allowed_origins' => [
         env('FRONTEND_URL', 'http://localhost:3000'),
+        'https://nautic.run',
+        'https://www.nautic.run',
     ],
 
     'allowed_origins_patterns' => [
