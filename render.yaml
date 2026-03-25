@@ -1,0 +1,68 @@
+# render.yaml — Infraestructura de tracking-api en Render
+# Docs: https://render.com/docs/infrastructure-as-code
+
+services:
+  - type: web
+    name: tracking-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    # Puerto que expone el contenedor (debe coincidir con nginx.conf)
+    port: 8080
+    # Health-check nativo de Laravel
+    healthCheckPath: /up
+
+    envVars:
+      # ── Aplicación ───────────────────────────────────────────────────────
+      - key: APP_NAME
+        value: TrackingAPI
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      # Genera con: php artisan key:generate --show
+      - key: APP_KEY
+        sync: false
+      # URL pública que Render asigna, ej: https://tracking-api.onrender.com
+      - key: APP_URL
+        sync: false
+
+      # ── Logs ─────────────────────────────────────────────────────────────
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: LOG_LEVEL
+        value: error
+
+      # ── Base de datos MySQL externa ───────────────────────────────────────
+      # Usa PlanetScale, Railway, Clever Cloud u otro MySQL externo.
+      - key: DB_CONNECTION
+        value: mysql
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: "3306"
+      - key: DB_DATABASE
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+
+      # ── JWT ───────────────────────────────────────────────────────────────
+      # Genera con: php artisan jwt:secret --show
+      - key: JWT_SECRET
+        sync: false
+
+      # ── Session / Cache / Queue ───────────────────────────────────────────
+      # Render usa almacenamiento efímero; cookies para sesiones es lo más simple.
+      - key: SESSION_DRIVER
+        value: cookie
+      - key: CACHE_STORE
+        value: array
+      - key: QUEUE_CONNECTION
+        value: sync
+
+      # ── CORS ──────────────────────────────────────────────────────────────
+      # URL del frontend en Netlify, ej: https://tracking-front.netlify.app
+      - key: FRONTEND_URL
+        sync: false

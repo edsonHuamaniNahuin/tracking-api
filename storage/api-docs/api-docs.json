@@ -1,0 +1,1590 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Tracking API",
+        "description": "Documentación de la Tracking API",
+        "contact": {
+            "email": "soporte@tudominio.com"
+        },
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/login": {
+            "summary": "Operaciones de autenticación",
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Iniciar sesión",
+                "operationId": "222b2625838e3c57e017987f73598fda",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LoginRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Autenticación exitosa",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Credenciales inválidas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 401
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Credenciales inválidas"
+                                        },
+                                        "data": {
+                                            "type": "null",
+                                            "example": null
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/vessels/{vessel}/trackings": {
+            "summary": "Operaciones sobre trackings",
+            "get": {
+                "tags": [
+                    "Trackings"
+                ],
+                "summary": "Listar trackings de una embarcación",
+                "operationId": "d23200fd3bfad797552453f17c823520",
+                "parameters": [
+                    {
+                        "name": "vessel",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 42
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de trackings",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TrackingCollectionResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Embarcación no encontrada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/vessels": {
+            "summary": "Operaciones sobre embarcaciones",
+            "get": {
+                "tags": [
+                    "Vessels"
+                ],
+                "summary": "Listar embarcaciones del usuario (paginado + filtrado)",
+                "operationId": "ea7d340f31181d93c427a49f4ba6f153",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Número de página",
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Ítems por página (máx 100)",
+                        "schema": {
+                            "type": "integer",
+                            "example": 15
+                        }
+                    },
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "description": "Filtrar por nombre (coincidencia parcial)",
+                        "schema": {
+                            "type": "string",
+                            "example": "Mi Barco"
+                        }
+                    },
+                    {
+                        "name": "imo",
+                        "in": "query",
+                        "description": "Filtrar por IMO (coincidencia parcial)",
+                        "schema": {
+                            "type": "string",
+                            "example": "IMO123456"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Embarcaciones paginadas y filtradas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Vessels"
+                ],
+                "summary": "Crear nueva embarcación",
+                "operationId": "93d0587807c5a2a72c3c653f4a00e9c2",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreVesselRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Embarcación creada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VesselResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Errores de validación"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/me": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Obtener perfil",
+                "description": "Retorna la información del usuario actualmente autenticado.",
+                "operationId": "8367feff40ba10e43187792cad3132c1",
+                "responses": {
+                    "200": {
+                        "description": "Datos de usuario",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Cerrar sesión",
+                "description": "Cierra la sesión invalidando el token.",
+                "operationId": "ad65cbbd4e9f201619eae184a5961a98",
+                "responses": {
+                    "200": {
+                        "description": "Sesión cerrada correctamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Sesión cerrada correctamente"
+                                        },
+                                        "data": {
+                                            "type": "null",
+                                            "example": null
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/refresh": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Refrescar token",
+                "description": "Refresca el token JWT.",
+                "operationId": "f6409cd8d794404a6410b0767432b0f4",
+                "responses": {
+                    "200": {
+                        "description": "Token refrescado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/user": {
+            "get": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Mostrar perfil",
+                "operationId": "5b219022e1f6d72ffff3925038abb15f",
+                "responses": {
+                    "200": {
+                        "description": "Perfil obtenido",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Actualizar perfil",
+                "operationId": "6bd8da18a97d6b740678958d39e0dc40",
+                "requestBody": {
+                    "$ref": "#/components/schemas/UpdateProfileRequest"
+                },
+                "responses": {
+                    "200": {
+                        "description": "Perfil actualizado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GenericResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/user/password": {
+            "put": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Cambiar contraseña",
+                "operationId": "41230f5767a1259d34c33a2e4b481dd4",
+                "requestBody": {
+                    "$ref": "#/components/schemas/ChangePasswordRequest"
+                },
+                "responses": {
+                    "200": {
+                        "description": "Contraseña cambiada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthResponse"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Error de contraseña",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/user/notifications/email/enable": {
+            "post": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Habilitar Notificaciones por Email",
+                "operationId": "c68a618e0f44c085ee8c1a2efefd6d6a",
+                "responses": {
+                    "200": {
+                        "description": "Notificaciones por email habilitadas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GenericResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/user/notifications/email/disable": {
+            "post": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Deshabilitar Notificaciones por Email",
+                "operationId": "6272d28efa603fc1f7531d5b3e6db878",
+                "responses": {
+                    "200": {
+                        "description": "Notificaciones por email deshabilitadas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GenericResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/user/notifications/push/enable": {
+            "post": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Habilitar Notificaciones Push",
+                "operationId": "e0a1b7d3f9d20470e9b0c462b6a05fd5",
+                "responses": {
+                    "200": {
+                        "description": "Notificaciones Push habilitadas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GenericResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/user/notifications/push/disable": {
+            "post": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Deshabilitar Notificaciones Push",
+                "operationId": "b0491cc470d121cf10ea6bcd882603e7",
+                "responses": {
+                    "200": {
+                        "description": "Notificaciones Push deshabilitadas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GenericResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/user/newsletter/enable": {
+            "post": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Habilitar newsletter",
+                "operationId": "c179199756da0ba68d0c6acc54bd4537",
+                "responses": {
+                    "200": {
+                        "description": "Newsletter habilitada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/user/newsletter/disable": {
+            "post": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Deshabilitar newsletter",
+                "operationId": "80c6663bb7680fbfee295bb82d25597a",
+                "responses": {
+                    "200": {
+                        "description": "Newsletter deshabilitada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/user/2fa/enable": {
+            "post": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Habilitar 2FA",
+                "operationId": "ef76011266d13fcff888e46b3b205cdf",
+                "responses": {
+                    "200": {
+                        "description": "2FA habilitada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/user/2fa/disable": {
+            "post": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Deshabilitar 2FA",
+                "operationId": "fa5ce3ee20dbb34f79b1e813b13621d9",
+                "responses": {
+                    "200": {
+                        "description": "2FA deshabilitada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/user/profile/private": {
+            "post": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Deshabilitar perfil público",
+                "operationId": "248da327df4d15194c5d07f273869d14",
+                "responses": {
+                    "200": {
+                        "description": "Perfil público deshabilitado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/user/profile/public": {
+            "post": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Habilitar perfil público",
+                "operationId": "904c426bf1752f1e42b50cb8f157eff3",
+                "responses": {
+                    "200": {
+                        "description": "Perfil público habilitado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/user/online-status/show": {
+            "post": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Mostrar estado online",
+                "operationId": "ea26c99b0e63b4658e3992c16e51a103",
+                "responses": {
+                    "200": {
+                        "description": "Estado online visible",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/user/online-status/hide": {
+            "post": {
+                "tags": [
+                    "Profile"
+                ],
+                "summary": "Ocultar estado online",
+                "operationId": "9b13276ec76f96608fe7eb2e0802dcb5",
+                "responses": {
+                    "200": {
+                        "description": "Estado online oculto",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/trackings": {
+            "post": {
+                "tags": [
+                    "Trackings"
+                ],
+                "summary": "Crear nuevo tracking",
+                "operationId": "bf41e5d565ffc2eabbb7f3207b268924",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreTrackingRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Tracking creado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TrackingResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Errores de validación"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/trackings/{tracking}": {
+            "get": {
+                "tags": [
+                    "Trackings"
+                ],
+                "summary": "Mostrar detalle de un tracking",
+                "operationId": "2efe8e8aea41fe70e0fd9fbd14396c73",
+                "parameters": [
+                    {
+                        "name": "tracking",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 125
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalle de tracking",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TrackingResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Tracking no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Trackings"
+                ],
+                "summary": "Actualizar tracking",
+                "operationId": "bbea00240e337090f1d98e454000ee0c",
+                "parameters": [
+                    {
+                        "name": "tracking",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 125
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateTrackingRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Tracking actualizado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/TrackingResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Tracking no encontrado"
+                    },
+                    "422": {
+                        "description": "Errores de validación"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Trackings"
+                ],
+                "summary": "Eliminar tracking",
+                "operationId": "b39d0a2d887555d4e91c0ba0362c5dc6",
+                "parameters": [
+                    {
+                        "name": "tracking",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 125
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Tracking eliminado"
+                    },
+                    "404": {
+                        "description": "Tracking no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/users/{user}/roles": {
+            "post": {
+                "tags": [
+                    "UserRoles"
+                ],
+                "summary": "Asignar rol a usuario",
+                "operationId": "ce35601debe2afb3295a34c4496efed1",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "role": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Rol asignado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/{user}/roles/{role}": {
+            "delete": {
+                "tags": [
+                    "UserRoles"
+                ],
+                "summary": "Revocar rol de usuario",
+                "operationId": "3ab0db0ea3c989ad5b23f7b22988ade4",
+                "parameters": [
+                    {
+                        "name": "user",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "role",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Rol revocado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AuthResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/vessels/{vessel}": {
+            "get": {
+                "tags": [
+                    "Vessels"
+                ],
+                "summary": "Mostrar detalles de una embarcación",
+                "operationId": "b4e87c5620edcce12a2f82ce6ac615df",
+                "parameters": [
+                    {
+                        "name": "vessel",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 42
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalle de embarcación",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VesselResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Vessels"
+                ],
+                "summary": "Actualizar embarcación",
+                "operationId": "5b0af2b2528f2e06ccf4332223bdfc56",
+                "parameters": [
+                    {
+                        "name": "vessel",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 42
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateVesselRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Embarcación actualizada",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VesselResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No encontrado"
+                    },
+                    "422": {
+                        "description": "Errores de validación"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Vessels"
+                ],
+                "summary": "Eliminar embarcación",
+                "operationId": "4f593f930f4132eca20655d621a0cc6c",
+                "parameters": [
+                    {
+                        "name": "vessel",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 42
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Embarcación eliminada"
+                    },
+                    "404": {
+                        "description": "No encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "AuthResponse": {
+                "properties": {
+                    "status": {
+                        "type": "integer",
+                        "example": 200
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Autenticación exitosa"
+                    },
+                    "data": {
+                        "properties": {
+                            "user": {
+                                "properties": {
+                                    "id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "user@example.com"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "username": {
+                                        "type": "string",
+                                        "example": "johnd"
+                                    },
+                                    "photoUrl": {
+                                        "type": "string",
+                                        "example": "https://…"
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "access_token": {
+                                "type": "string",
+                                "example": "jwt.token.here"
+                            },
+                            "token_type": {
+                                "type": "string",
+                                "example": "bearer"
+                            },
+                            "expires_in": {
+                                "type": "integer",
+                                "example": 3600
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "GenericResponse": {
+                "properties": {
+                    "status": {
+                        "type": "integer",
+                        "example": 200
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Operación exitosa"
+                    },
+                    "data": {
+                        "properties": {
+                            "user": {
+                                "properties": {
+                                    "id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "user@example.com"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "John Doe"
+                                    },
+                                    "username": {
+                                        "type": "string",
+                                        "example": "johnd"
+                                    },
+                                    "photoUrl": {
+                                        "type": "string",
+                                        "example": "https://…"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "PaginatedResponse": {
+                "properties": {
+                    "status": {
+                        "type": "integer",
+                        "example": 200
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Operación exitosa"
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {}
+                    },
+                    "meta": {
+                        "properties": {
+                            "current_page": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "per_page": {
+                                "type": "integer",
+                                "example": 15
+                            },
+                            "total": {
+                                "type": "integer",
+                                "example": 100
+                            },
+                            "last_page": {
+                                "type": "integer",
+                                "example": 7
+                            },
+                            "from": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "to": {
+                                "type": "integer",
+                                "example": 15
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "TrackingCollectionResponse": {
+                "properties": {
+                    "status": {
+                        "type": "integer",
+                        "example": 200
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Lista de trackings"
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/TrackingData"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "TrackingData": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 125
+                    },
+                    "vessel_id": {
+                        "type": "integer",
+                        "example": 42
+                    },
+                    "latitude": {
+                        "type": "number",
+                        "format": "float",
+                        "example": -12.0453
+                    },
+                    "longitude": {
+                        "type": "number",
+                        "format": "float",
+                        "example": -77.0311
+                    },
+                    "tracked_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-06-02T16:50:00.000000Z"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-06-02T16:50:30.000000Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-06-02T16:50:30.000000Z"
+                    }
+                },
+                "type": "object"
+            },
+            "TrackingResponse": {
+                "properties": {
+                    "status": {
+                        "type": "integer",
+                        "example": 200
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Operación exitosa"
+                    },
+                    "data": {
+                        "$ref": "#/components/schemas/TrackingData"
+                    }
+                },
+                "type": "object"
+            },
+            "VesselCollectionResponse": {
+                "properties": {
+                    "status": {
+                        "type": "integer",
+                        "example": 200
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Lista de embarcaciones"
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/VesselData"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "VesselData": {
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 42
+                    },
+                    "name": {
+                        "type": "string",
+                        "example": "Mi Barco A"
+                    },
+                    "imo": {
+                        "type": "string",
+                        "example": "IMO123456"
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 7
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-06-02T16:45:12.000000Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-06-02T16:45:12.000000Z"
+                    }
+                },
+                "type": "object"
+            },
+            "VesselResponse": {
+                "properties": {
+                    "status": {
+                        "type": "integer",
+                        "example": 200
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Operación exitosa"
+                    },
+                    "data": {
+                        "$ref": "#/components/schemas/VesselData"
+                    }
+                },
+                "type": "object"
+            },
+            "LoginRequest": {
+                "required": [
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "user@example.com"
+                    },
+                    "password": {
+                        "type": "string",
+                        "format": "password",
+                        "example": "secret123"
+                    }
+                },
+                "type": "object"
+            },
+            "ChangePasswordRequest": {
+                "required": [
+                    "current_password",
+                    "new_password"
+                ],
+                "properties": {
+                    "current_password": {
+                        "type": "string",
+                        "format": "password",
+                        "example": "oldPass123"
+                    },
+                    "new_password": {
+                        "type": "string",
+                        "format": "password",
+                        "example": "newSecret456"
+                    }
+                },
+                "type": "object"
+            },
+            "LoginHttpRequestSchema": {
+                "required": [
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "user@example.com"
+                    },
+                    "password": {
+                        "type": "string",
+                        "format": "password",
+                        "example": "secret123"
+                    }
+                },
+                "type": "object"
+            },
+            "PaginateRequest": {
+                "properties": {
+                    "page": {
+                        "description": "Valida los parámetros de paginación.",
+                        "type": "integer",
+                        "minimum": 1,
+                        "example": 1
+                    },
+                    "per_page": {
+                        "type": "integer",
+                        "maximum": 100,
+                        "minimum": 1,
+                        "example": 15
+                    }
+                },
+                "type": "object"
+            },
+            "StoreTrackingRequest": {
+                "required": [
+                    "vessel_id",
+                    "latitude",
+                    "longitude"
+                ],
+                "properties": {
+                    "vessel_id": {
+                        "type": "integer",
+                        "example": 42
+                    },
+                    "latitude": {
+                        "type": "number",
+                        "format": "float",
+                        "example": -12.0453
+                    },
+                    "longitude": {
+                        "type": "number",
+                        "format": "float",
+                        "example": -77.0311
+                    },
+                    "tracked_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-06-02T16:50:00Z"
+                    }
+                },
+                "type": "object"
+            },
+            "StoreVesselRequest": {
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "Mi Barco A"
+                    },
+                    "imo": {
+                        "type": "string",
+                        "maxLength": 50,
+                        "example": "IMO123456"
+                    }
+                },
+                "type": "object"
+            },
+            "UpdatePreferencesRequest": {
+                "properties": {
+                    "newsletter_subscribed": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "public_profile": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "show_online_status": {
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateProfileRequest": {
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "example": "Juan Pérez"
+                    },
+                    "username": {
+                        "type": "string",
+                        "example": "juanperez"
+                    },
+                    "email": {
+                        "type": "string",
+                        "format": "email",
+                        "example": "juan.perez@ejemplo.com"
+                    },
+                    "phone": {
+                        "type": "string",
+                        "example": "+34 123 456 789"
+                    },
+                    "bio": {
+                        "type": "string",
+                        "example": "Desarrollador Full Stack..."
+                    },
+                    "location": {
+                        "type": "string",
+                        "example": "Madrid, España"
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateTrackingRequest": {
+                "properties": {
+                    "latitude": {
+                        "type": "number",
+                        "format": "float",
+                        "example": -12.0498
+                    },
+                    "longitude": {
+                        "type": "number",
+                        "format": "float",
+                        "example": -77.0289
+                    },
+                    "tracked_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-06-02T16:40:00Z"
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateVesselRequest": {
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "Mi Barco Modificado"
+                    },
+                    "imo": {
+                        "type": "string",
+                        "maxLength": 50,
+                        "example": "IMO654321"
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Auth",
+            "description": "Endpoints para iniciar sesión, refrescar token y cerrar sesión"
+        },
+        {
+            "name": "Profile",
+            "description": "Endpoints para gestión de perfil de usuario"
+        },
+        {
+            "name": "Trackings",
+            "description": "CRUD de registros de ubicación (trackings)"
+        },
+        {
+            "name": "UserRoles",
+            "description": "Asignar y revocar roles de usuario"
+        },
+        {
+            "name": "Vessels",
+            "description": "CRUD de embarcaciones"
+        }
+    ]
+}
