@@ -21,3 +21,9 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+
+# Old workflows (keep only deploy.yml)
+.github/workflows/issues.yml
+.github/workflows/pull-requests.yml
+.github/workflows/tests.yml
+.github/workflows/update-changelog.yml
