@@ -132,11 +132,17 @@ class TrackingService
         }
 
         if (!empty($filters['date_from'])) {
-            $query->whereDate('tracked_at', '>=', $filters['date_from']);
+            $from = Carbon::parse($filters['date_from']);
+            $query->where('tracked_at', '>=', $from);
         }
 
         if (!empty($filters['date_to'])) {
-            $query->whereDate('tracked_at', '<=', $filters['date_to']);
+            $to = Carbon::parse($filters['date_to']);
+            // Si sólo se envió fecha (sin hora), incluir todo el día
+            if (!str_contains($filters['date_to'], ':')) {
+                $to = $to->endOfDay();
+            }
+            $query->where('tracked_at', '<=', $to);
         }
 
         if (!empty($filters['days_ago'])) {
