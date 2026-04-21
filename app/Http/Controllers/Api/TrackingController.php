@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Http\Controllers\Api;
 
@@ -79,7 +79,7 @@ class TrackingController extends Controller
         // Verificar permisos usando Policy
         $this->authorize('viewAny', Tracking::class);
 
-        $perPage = min($request->get('per_page', 15), 1000);
+        $perPage = min($request->get('per_page', 15), 10000);
 
         // Preparar filtros
         $filters = $request->only(['vessel_id', 'date_from', 'date_to', 'days_ago']);
@@ -138,7 +138,7 @@ class TrackingController extends Controller
         // Verificar permisos usando Policy
         $this->authorize('viewForVessel', [Tracking::class, $vessel]);
 
-        $perPage = min($request->get('per_page', 15), 1000);
+        $perPage = min($request->get('per_page', 15), 10000);
 
         // Obtener trackings usando el servicio
         $trackings = $this->trackingService->getTrackingsByVessel($vessel, $perPage);

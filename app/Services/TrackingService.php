@@ -123,7 +123,15 @@ class TrackingService
     }
 
     /**
-     * Aplicar filtros a la query
+     * Aplicar filtros a la query.
+     *
+     * Política de granularidad:
+     * - HOY       → se respetan las horas enviadas (filtro preciso por hora).
+     * - AYER ←   → se normaliza al día completo (startOfDay / endOfDay),
+     *               independientemente de la hora recibida.
+     *
+     * Esto permite cachear resultados históricos por día completo tanto en el
+     * servidor como en el cliente, ya que el pasado es inmutable.
      */
     private function applyFilters(Builder $query, array $filters): void
     {
@@ -131,16 +139,22 @@ class TrackingService
             $query->where('vessel_id', $filters['vessel_id']);
         }
 
+        $todayStart = Carbon::today(); // midnight de hoy en el timezone del sistema
+
         if (!empty($filters['date_from'])) {
             $from = Carbon::parse($filters['date_from']);
+            // Si es un día anterior a hoy → forzar inicio del día completo
+            if ($from->lt($todayStart)) {
+                $from->startOfDay();
+            }
             $query->where('tracked_at', '>=', $from);
         }
 
         if (!empty($filters['date_to'])) {
             $to = Carbon::parse($filters['date_to']);
-            // Si sólo se envió fecha (sin hora), incluir todo el día
-            if (!str_contains($filters['date_to'], ':')) {
-                $to = $to->endOfDay();
+            // Si es un día anterior a hoy → forzar fin del día completo
+            if ($to->lt($todayStart)) {
+                $to->endOfDay();
             }
             $query->where('tracked_at', '<=', $to);
         }
