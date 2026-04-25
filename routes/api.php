@@ -65,7 +65,10 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('trackings', TrackingController::class);
 
         // Listar trackings por embarcación (método alternativo)
-        Route::get('vessels/{vessel}/trackings', [TrackingController::class, 'indexByVessel']);
+        Route::get('vessels/{vessel}/trackings',      [TrackingController::class, 'indexByVessel']);
+
+        // Días únicos con registros — consulta ligera para el filtro de fecha en el frontend
+        Route::get('vessels/{vessel}/tracking-days',  [TrackingController::class, 'trackingDays']);
 
         // Rutas para formularios (estructura completa de modelos)
         Route::get('vessels-types',                  [DashboardController::class, 'getVesselTypesForForms']);

@@ -337,4 +337,38 @@ class TrackingController extends Controller
 
         return new TrackingCollectionResponse($trackings->toArray(), 200, 'Trackings recientes');
     }
+
+    /**
+     * @OA\Get(
+     *     path="/api/v1/vessels/{vessel}/tracking-days",
+     *     summary="Días únicos con registros de tracking para una embarcación",
+     *     tags={"Trackings"},
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="vessel",
+     *         in="path",
+     *         required=true,
+     *         description="ID de la embarcación",
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Lista de fechas (YYYY-MM-DD) con datos"
+     *     ),
+     *     @OA\Response(response=403, description="No autorizado"),
+     *     @OA\Response(response=404, description="Embarcación no encontrada")
+     * )
+     */
+    public function trackingDays(Vessel $vessel): JsonResponse
+    {
+        $this->authorize('view', $vessel);
+
+        $days = $this->trackingService->getTrackingDays($vessel);
+
+        return response()->json([
+            'status'  => 200,
+            'message' => 'Días con registros de tracking',
+            'data'    => $days,
+        ]);
+    }
 }

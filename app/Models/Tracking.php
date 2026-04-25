@@ -14,12 +14,16 @@ class Tracking extends Model
         'vessel_id',
         'latitude',
         'longitude',
+        'satellites',
+        'hdop',
         'tracked_at',
     ];
 
     protected $casts = [
-        'latitude' => 'decimal:8',
-        'longitude' => 'decimal:8',
+        'latitude'   => 'decimal:8',
+        'longitude'  => 'decimal:8',
+        'satellites' => 'integer',
+        'hdop'       => 'decimal:2',
         'tracked_at' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',

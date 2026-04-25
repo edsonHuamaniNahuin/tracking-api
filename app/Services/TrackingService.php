@@ -165,6 +165,23 @@ class TrackingService
     }
 
     /**
+     * Obtener los días únicos en que una embarcación tiene registros de tracking.
+     *
+     * Query ligera: un solo GROUP BY sobre (vessel_id, DATE(tracked_at)).
+     * El índice compuesto (vessel_id, tracked_at) cubre la operación.
+     * Retorna array de strings 'YYYY-MM-DD' ordenados descendente.
+     */
+    public function getTrackingDays(Vessel $vessel): array
+    {
+        return $vessel->trackings()
+            ->selectRaw('DATE(tracked_at) as day')
+            ->groupBy('day')
+            ->orderBy('day', 'desc')
+            ->pluck('day')
+            ->toArray();
+    }
+
+    /**
      * Validar que el usuario puede acceder a una embarcación
      */
     public function canAccessVessel(User $user, int $vesselId): bool

@@ -28,6 +28,8 @@ class StoreTrackingRequest extends FormRequest
             'vessel_id'  => ['required', 'integer', 'exists:vessels,id'],
             'latitude'   => ['required', 'numeric', 'between:-90,90'],
             'longitude'  => ['required', 'numeric', 'between:-180,180'],
+            'satellites' => ['sometimes', 'nullable', 'integer', 'min:0', 'max:99'],
+            'hdop'       => ['sometimes', 'nullable', 'numeric', 'min:0', 'max:99.99'],
             'tracked_at' => ['sometimes', 'date'],
         ];
     }

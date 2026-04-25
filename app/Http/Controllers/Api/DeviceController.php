@@ -28,6 +28,13 @@ class DeviceController extends Controller
     /** Mínimo de satélites para considerar un fix GPS aceptable. */
     private const MIN_SATELLITES = 4;
 
+    /**
+     * HDOP máximo aceptable (Horizontal Dilution of Precision).
+     * Menor valor = mayor precisión.
+     * < 1.0 ideal · 1-2 excelente · 2-3.5 bueno · > 3.5 empieza a dar puntos erróneos.
+     */
+    private const MAX_HDOP = 3.5;
+
     /** Distancia mínima (metros) respecto al último punto para persistir uno nuevo. */
     private const MIN_DISTANCE_METERS = 5;
 
@@ -363,8 +370,9 @@ class DeviceController extends Controller
             $lat        = (float) $request->input('lat');
             $lon        = (float) $request->input('lon');
             $satellites = (int)   $request->input('satellites', 0);
+            $hdop       = $request->input('hdop') !== null ? (float) $request->input('hdop') : null;
 
-            // ── Filtro 1: precisión GPS — ≥4 satélites obligatorio ──────────
+            // ── Filtro 1: satélites mínimos ──────────────────────────────────
             if ($satellites < self::MIN_SATELLITES) {
                 // Registramos en telemetría para diagnóstico, pero NO en trackings
                 $telemetryDto = \App\DTO\TelemetryData::fromArray([
@@ -388,6 +396,36 @@ class DeviceController extends Controller
                 return response()->json([
                     'status'  => 200,
                     'message' => "Ping recibido (tracking descartado: {$satellites} sat < " . self::MIN_SATELLITES . ").",
+                    'data'    => [
+                        'command'   => $command,
+                        'vessel_id' => $vessel->id,
+                        'config'    => $vessel->getDeviceConfig(),
+                    ],
+                ]);
+            }
+
+            // ── Filtro 2: HDOP máximo (precisión horizontal) ─────────────────
+            if ($hdop !== null && $hdop > self::MAX_HDOP) {
+                $telemetryDto = \App\DTO\TelemetryData::fromArray([
+                    'vessel_id'  => $vessel->id,
+                    'lat'        => $lat,
+                    'lng'        => $lon,
+                    'speed'      => $request->input('speed'),
+                    'course'     => $request->input('course'),
+                    'fuel_level' => $request->input('fuel_level'),
+                    'rpm'        => $request->input('rpm'),
+                    'voltage'    => $request->input('voltage'),
+                    'raw_data'   => array_merge($request->only([
+                        'lat', 'lon', 'speed', 'course', 'fuel_level',
+                        'rpm', 'voltage', 'altitude', 'satellites', 'hdop',
+                    ]), ['rejected' => 'high_hdop', 'hdop_value' => $hdop]),
+                ]);
+                \App\Jobs\ProcessTelemetry::dispatchSync($telemetryDto);
+
+                $command = $vessel->consumeCommand();
+                return response()->json([
+                    'status'  => 200,
+                    'message' => "Ping recibido (tracking descartado: HDOP {$hdop} > " . self::MAX_HDOP . ").",
                     'data'    => [
                         'command'   => $command,
                         'vessel_id' => $vessel->id,
@@ -436,6 +474,8 @@ class DeviceController extends Controller
                     'vessel_id'  => $vessel->id,
                     'latitude'   => $lat,
                     'longitude'  => $lon,
+                    'satellites' => $satellites,
+                    'hdop'       => $hdop,
                     'tracked_at' => now(),
                     'created_at' => now(),
                     'updated_at' => now(),
