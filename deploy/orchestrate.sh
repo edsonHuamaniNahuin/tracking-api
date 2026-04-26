@@ -80,7 +80,16 @@ do_deploy() {
         log_info "Saltando migraciones (--skip-migrate)"
     fi
 
-    # 4. Cachés Laravel
+    # 4. Publicar configs de paquetes (solo si no existen)
+    log_step "PUBLICAR CONFIGS DE PAQUETES"
+    if [ ! -f "$APP_DIR/config/jwt.php" ]; then
+        $PHP_BIN artisan vendor:publish --provider="Tymon\JWTAuth\Providers\LaravelServiceProvider" --no-interaction 2>&1
+        log_ok "config/jwt.php publicado"
+    else
+        log_info "config/jwt.php ya existe — omitiendo"
+    fi
+
+    # 5. Cachés Laravel
     log_step "CACHÉS LARAVEL"
     $PHP_BIN artisan config:cache
     $PHP_BIN artisan route:cache
