@@ -18,7 +18,9 @@ Route::prefix('v1')->group(function () {
     //
     // Autenticación pública
     //
-    Route::post('auth/login',                       [AuthController::class, 'login'])->name('login');
+    Route::post('auth/login',   [AuthController::class, 'login'])->name('login');
+    // Renovación de token — acepta tokens expirados dentro de la ventana JWT_REFRESH_TTL
+    Route::post('auth/refresh', [AuthController::class, 'refresh']);
 
     //
     // Rutas protegidas por JWT
@@ -49,7 +51,7 @@ Route::prefix('v1')->group(function () {
         // Endpoints de Auth internos
         Route::post('auth/me',                      [AuthController::class, 'me']);
         Route::post('auth/logout',                  [AuthController::class, 'logout']);
-        Route::post('auth/refresh',                 [AuthController::class, 'refresh']);
+        // auth/refresh ya está fuera del grupo (acepta tokens expirados)
 
 
 

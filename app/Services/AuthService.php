@@ -99,11 +99,32 @@ class AuthService
 
     /**
      * Refresca token y retorna nuevo payload.
+     *
+     * Funciona con tokens expirados siempre que estén dentro de la ventana
+     * definida por JWT_REFRESH_TTL (por defecto 3 horas / 180 minutos).
+     * La ruta /auth/refresh debe estar FUERA del middleware auth:api para
+     * que el framework no rechace el token antes de llegar aquí.
      */
     public function refresh(): AuthResponse
     {
-        $token = JWTAuth::refresh();
-        $user  =  Auth::user();
+        try {
+            $newToken = JWTAuth::parseToken()->refresh();
+        } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
+            return new AuthResponse(
+                data: null,
+                status: 401,
+                message: 'La sesión ha expirado y ya no puede renovarse. Por favor, inicia sesión nuevamente.'
+            );
+        } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
+            return new AuthResponse(
+                data: null,
+                status: 401,
+                message: 'Token inválido o ausente.'
+            );
+        }
+
+        // Obtener usuario a partir del nuevo token
+        $user = JWTAuth::setToken($newToken)->toUser();
 
         return new AuthResponse(
             data: [
@@ -113,8 +134,9 @@ class AuthService
                     'name'     => $user->name,
                     'username' => $user->username,
                     'photoUrl' => $user->photoUrl,
+                    'avatar'   => $user->avatar,
                 ],
-                'access_token' => $token,
+                'access_token' => $newToken,
                 'token_type'   => 'bearer',
                 'expires_in'   => JWTAuth::factory()->getTTL() * 60,
             ],
