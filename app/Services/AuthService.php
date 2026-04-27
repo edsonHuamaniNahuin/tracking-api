@@ -6,6 +6,9 @@ use App\DTO\AuthRequest;
 use App\DTO\AuthResponse;
 use App\Repositories\UserRepository;
 use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Facades\Auth;
 
 class AuthService
@@ -109,22 +112,25 @@ class AuthService
     {
         try {
             $newToken = JWTAuth::parseToken()->refresh();
-        } catch (\Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
+
+            // Obtener usuario a partir del nuevo token.
+            // toUser() puede lanzar AuthenticationException (no subclase de JWTException)
+            // si el guard no puede resolver al usuario; se captura aquí para evitar que
+            // escape al handler global y devuelva un mensaje genérico.
+            $user = JWTAuth::setToken($newToken)->toUser();
+        } catch (TokenExpiredException $e) {
             return new AuthResponse(
                 data: null,
                 status: 401,
                 message: 'La sesión ha expirado y ya no puede renovarse. Por favor, inicia sesión nuevamente.'
             );
-        } catch (\Tymon\JWTAuth\Exceptions\JWTException $e) {
+        } catch (AuthenticationException|JWTException $e) {
             return new AuthResponse(
                 data: null,
                 status: 401,
                 message: 'Token inválido o ausente.'
             );
         }
-
-        // Obtener usuario a partir del nuevo token
-        $user = JWTAuth::setToken($newToken)->toUser();
 
         return new AuthResponse(
             data: [
