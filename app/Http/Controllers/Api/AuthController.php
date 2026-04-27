@@ -23,7 +23,10 @@ class AuthController extends Controller
 {
     public function __construct(private AuthService $authService)
     {
-        $this->middleware('auth:api', ['except' => ['login']]);
+        // 'refresh' también excluido: acepta tokens expirados dentro de JWT_REFRESH_TTL.
+        // La ruta ya está fuera del grupo auth:api en routes/api.php; este except
+        // evita que el middleware del controlador rechace el token antes de llegar al método.
+        $this->middleware('auth:api', ['except' => ['login', 'refresh']]);
     }
 
     /**
