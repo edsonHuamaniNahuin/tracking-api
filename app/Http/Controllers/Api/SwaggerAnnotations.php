@@ -20,6 +20,29 @@ namespace App\Http\Controllers\Api;
  *
  *
  *
+ * @OA\Schema(
+ *   schema="StoreVesselMetricRequest",
+ *   type="object",
+ *   required={"vessel_id","period"},
+ *   @OA\Property(property="vessel_id",         type="integer", example=1),
+ *   @OA\Property(property="period",            type="string",  format="date", example="2026-04-01"),
+ *   @OA\Property(property="avg_speed",         type="number",  format="float", nullable=true, example=12.5),
+ *   @OA\Property(property="fuel_consumption",  type="number",  format="float", nullable=true, example=320.0),
+ *   @OA\Property(property="maintenance_count", type="integer", nullable=true, example=2),
+ *   @OA\Property(property="safety_incidents",  type="integer", nullable=true, example=0)
+ * )
+ *
+ * @OA\Schema(
+ *   schema="UpdateVesselMetricRequest",
+ *   type="object",
+ *   @OA\Property(property="vessel_id",         type="integer", nullable=true, example=1),
+ *   @OA\Property(property="period",            type="string",  format="date", nullable=true, example="2026-04-01"),
+ *   @OA\Property(property="avg_speed",         type="number",  format="float", nullable=true, example=12.5),
+ *   @OA\Property(property="fuel_consumption",  type="number",  format="float", nullable=true, example=320.0),
+ *   @OA\Property(property="maintenance_count", type="integer", nullable=true, example=2),
+ *   @OA\Property(property="safety_incidents",  type="integer", nullable=true, example=0)
+ * )
+ *
  */
 class SwaggerAnnotations
 {

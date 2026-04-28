@@ -10,26 +10,27 @@ class RolePermissionSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Crear permisos
+        // 1. Crear permisos con su etiqueta legible
         $permissions = [
-            'manage_users',
-            'manage_roles',
-            'manage_vessels',
-            'manage_trackings',
-            'view_reports',
-            'configure_system',
-            'create_tracking',
-            'update_tracking',
-            'view_vessels',
-            'view_trackings',
-            'view_public_info',
+            'configure_system'  => 'Configurar sistema',
+            'create_tracking'   => 'Crear seguimiento',
+            'manage_fleets'     => 'Gestionar flotas',
+            'manage_roles'      => 'Gestionar roles y permisos',
+            'manage_trackings'  => 'Gestionar seguimientos',
+            'manage_users'      => 'Gestionar usuarios',
+            'manage_vessels'    => 'Gestionar unidades',
+            'update_tracking'   => 'Actualizar seguimiento',
+            'view_public_info'  => 'Ver información pública',
+            'view_reports'      => 'Ver reportes',
+            'view_trackings'    => 'Ver seguimientos',
+            'view_vessels'      => 'Ver unidades',
         ];
 
-        foreach ($permissions as $perm) {
-            Permission::firstOrCreate([
-                'name'       => $perm,
-                'guard_name' => 'api',
-            ]);
+        foreach ($permissions as $name => $label) {
+            Permission::updateOrCreate(
+                ['name' => $name, 'guard_name' => 'api'],
+                ['label' => $label]
+            );
         }
 
         // 2. Obtener colecciones de permisos por grupos
@@ -43,6 +44,7 @@ class RolePermissionSeeder extends Seeder
         $baseManagerPermissions = Permission::whereIn('name', [
             'manage_vessels',
             'manage_trackings',
+            'manage_fleets',
             'view_reports',
         ])->get();
 

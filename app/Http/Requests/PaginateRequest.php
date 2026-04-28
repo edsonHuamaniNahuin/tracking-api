@@ -11,7 +11,7 @@ use Illuminate\Foundation\Http\FormRequest;
  *   schema="PaginateRequest",
  *   type="object",
  *   @OA\Property(property="page",     type="integer", example=1, minimum=1),
- *   @OA\Property(property="per_page", type="integer", example=15, minimum=1, maximum=100)
+   *   @OA\Property(property="per_page", type="integer", example=15, minimum=1, maximum=500)
  * )
  */
 class PaginateRequest extends FormRequest
@@ -25,11 +25,12 @@ class PaginateRequest extends FormRequest
     {
         return [
             'page'     => ['sometimes', 'integer', 'min:1'],
-            'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
+            'per_page' => ['sometimes', 'integer', 'min:1', 'max:500'],
             'name'     => ['nullable', 'string', 'max:255'],
             'imo'      => ['nullable', 'string', 'max:50'],
             'type_id'     => ['sometimes', 'integer', 'exists:vessel_types,id'],
             'status_id'   => ['sometimes', 'integer', 'exists:vessel_statuses,id'],
+            'own_only'    => ['sometimes', 'in:0,1,true,false'],
         ];
     }
 
@@ -75,5 +76,12 @@ class PaginateRequest extends FormRequest
     public function filterStatusId(): ?int
     {
         return $this->input('status_id');
+    }
+
+    /** Si es true, siempre filtra por user_id del usuario autenticado (ignora rol admin). */
+    public function filterOwnOnly(): bool
+    {
+        $val = $this->input('own_only', false);
+        return filter_var($val, FILTER_VALIDATE_BOOLEAN);
     }
 }

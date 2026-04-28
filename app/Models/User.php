@@ -81,14 +81,12 @@ class User extends Authenticatable implements JWTSubject
 
     public function getPhotoUrlAttribute(): ?string
     {
-        // Asumiendo que lo guardas en storage/app/public:
-        return $this->attributes['photo_url']
-            ? url("storage/{$this->attributes['photo_url']}")
-            : null;
+        $photo = $this->attributes['photo_url'] ?? null;
+        return $photo ? url("storage/{$photo}") : null;
     }
     public function getTwoFactorEnabledAttribute(): bool
     {
-        return $this->attributes['two_factor_enabled'];
+        return (bool) ($this->attributes['two_factor_enabled'] ?? false);
     }
 
     public function getAvatarAttribute(): string

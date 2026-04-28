@@ -13,6 +13,7 @@ class Vessel extends Model
 
     protected $fillable = [
         'user_id',
+        'fleet_id',
         'name',
         'imo',
         'vessel_type_id',
@@ -52,7 +53,13 @@ class Vessel extends Model
     {
         return $this->belongsTo(User::class);
     }
-
+    /**
+     * Flota a la que pertenece esta embarcación (nullable).
+     */
+    public function fleet()
+    {
+        return $this->belongsTo(Fleet::class);
+    }
 
     /**
      * Relación con el tipo de embarcación.

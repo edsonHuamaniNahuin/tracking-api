@@ -38,12 +38,14 @@ class AuthService
         return new AuthResponse(
             data: [
                 'user'         => [
-                    'id'       => $user->id,
-                    'email'    => $user->email,
-                    'name'     => $user->name,
-                    'username' => $user->username,
-                    'photoUrl' => $user->photoUrl,
-                    'avatar'   => $user->avatar
+                    'id'          => $user->id,
+                    'email'       => $user->email,
+                    'name'        => $user->name,
+                    'username'    => $user->username,
+                    'photoUrl'    => $user->photoUrl,
+                    'avatar'      => $user->avatar,
+                    'roles'       => $user->getRoleNames(),
+                    'permissions' => $user->getAllPermissions()->pluck('name'),
                 ],
                 'access_token' => $token,
                 'token_type'   => 'bearer',
@@ -79,7 +81,8 @@ class AuthService
                     'two_factor_enabled'                    => $user->phone,
                     'email_notifications_enabled'           => $user->email_notifications_enabled,
                     'push_notifications_enabled'            => $user->push_notifications_enabled,
-
+                    'roles'                                 => $user->getRoleNames(),
+                    'permissions'                           => $user->getAllPermissions()->pluck('name'),
                 ],
             ],
             status: 200,
@@ -135,12 +138,14 @@ class AuthService
         return new AuthResponse(
             data: [
                 'user'         => [
-                    'id'       => $user->id,
-                    'email'    => $user->email,
-                    'name'     => $user->name,
-                    'username' => $user->username,
-                    'photoUrl' => $user->photoUrl,
-                    'avatar'   => $user->avatar,
+                    'id'          => $user->id,
+                    'email'       => $user->email,
+                    'name'        => $user->name,
+                    'username'    => $user->username,
+                    'photoUrl'    => $user->photoUrl,
+                    'avatar'      => $user->avatar,
+                    'roles'       => $user->getRoleNames(),
+                    'permissions' => $user->getAllPermissions()->pluck('name'),
                 ],
                 'access_token' => $newToken,
                 'token_type'   => 'bearer',

@@ -24,11 +24,12 @@ class VesselService
         ?string $filterName = null,
         ?string $filterImo  = null,
         ?int    $typeId     = null,
-        ?int    $statusId   = null
+        ?int    $statusId   = null,
+        bool    $ownOnly    = false
     ): PaginatedResponse {
         /** @var \App\Models\User $user */
         $user    = Auth::user();
-        $isAdmin = $user->hasRole('Administrator', 'api');
+        $isAdmin = !$ownOnly && $user->hasRole('Administrator', 'api');
 
         Gate::authorize('viewAny', Vessel::class);
 

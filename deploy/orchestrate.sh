@@ -80,13 +80,32 @@ do_deploy() {
         log_info "Saltando migraciones (--skip-migrate)"
     fi
 
+    # 3b. Garantizar roles/permisos y usuario admin permanente
+    log_step "ROLES, PERMISOS Y ADMIN PERMANENTE"
+    $PHP_BIN artisan db:seed --class=RolePermissionSeeder --force 2>&1
+    $PHP_BIN artisan db:seed --class=AdminUserSeeder --force 2>&1
+    $PHP_BIN artisan permission:cache-reset 2>&1 || true
+    log_ok "Roles, permisos y admin garantizados"
+
     # 4. Publicar configs de paquetes (solo si no existen)
     log_step "PUBLICAR CONFIGS DE PAQUETES"
     if [ ! -f "$APP_DIR/config/jwt.php" ]; then
         $PHP_BIN artisan vendor:publish --provider="Tymon\JWTAuth\Providers\LaravelServiceProvider" --no-interaction 2>&1
         log_ok "config/jwt.php publicado"
     else
-        log_info "config/jwt.php ya existe — omitiendo"
+        log_info "config/jwt.php ya existe — omitiendo publicación"
+    fi
+
+    # 4b. Garantizar que jwt.ttl y jwt.refresh_ttl sean int (fix Carbon TypeError)
+    #     Reemplaza  env('JWT_TTL', 60)  →  (int) env('JWT_TTL', 60)  si aún no tiene el cast
+    log_step "VERIFICAR CAST INT EN config/jwt.php"
+    JWT_CFG="$APP_DIR/config/jwt.php"
+    if grep -q "=> env('JWT_TTL'" "$JWT_CFG" && ! grep -q "(int) env('JWT_TTL'" "$JWT_CFG"; then
+        sed -i "s/'ttl' => env('JWT_TTL',/'ttl' => (int) env('JWT_TTL',/g" "$JWT_CFG"
+        sed -i "s/'refresh_ttl' => env('JWT_REFRESH_TTL',/'refresh_ttl' => (int) env('JWT_REFRESH_TTL',/g" "$JWT_CFG"
+        log_ok "Cast (int) aplicado a jwt.ttl y jwt.refresh_ttl"
+    else
+        log_info "config/jwt.php ya tiene cast (int) — omitiendo"
     fi
 
     # 5. Cachés Laravel

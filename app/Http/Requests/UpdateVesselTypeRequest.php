@@ -30,6 +30,7 @@ class UpdateVesselTypeRequest extends FormRequest
                 'max:255',
                 Rule::unique('vessel_types', 'name')->ignore($type?->id),
             ],
+            'category' => ['sometimes', 'string', 'in:maritime,terrestrial'],
         ];
     }
 

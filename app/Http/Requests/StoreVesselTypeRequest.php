@@ -22,7 +22,8 @@ class StoreVesselTypeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255', 'unique:vessel_types,name'],
+            'name'     => ['required', 'string', 'max:255', 'unique:vessel_types,name'],
+            'category' => ['sometimes', 'string', 'in:maritime,terrestrial'],
         ];
     }
 
@@ -32,6 +33,7 @@ class StoreVesselTypeRequest extends FormRequest
             'name.required' => 'El campo "name" es obligatorio.',
             'name.unique'   => 'Ya existe un tipo con ese nombre.',
             'name.max'      => 'El nombre no debe exceder 255 caracteres.',
+            'category.in'   => 'La categoría debe ser "maritime" o "terrestrial".',
         ];
     }
 }

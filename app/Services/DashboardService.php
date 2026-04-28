@@ -225,7 +225,7 @@ class DashboardService
      */
     public function getVesselTypesForForms(): array
     {
-        return VesselType::select('id', 'name', 'slug', 'created_at', 'updated_at')
+        return VesselType::select('id', 'name', 'slug', 'category', 'created_at', 'updated_at')
             ->orderBy('name')
             ->get()
             ->toArray();

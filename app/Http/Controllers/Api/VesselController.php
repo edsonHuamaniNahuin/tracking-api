@@ -52,7 +52,8 @@ class VesselController extends Controller
             $request->filterName(),
             $request->filterImo(),
             $request->filterTypeId(),
-            $request->filterStatusId()
+            $request->filterStatusId(),
+            $request->filterOwnOnly()
         );
     }
 

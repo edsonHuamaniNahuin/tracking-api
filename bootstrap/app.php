@@ -9,6 +9,7 @@ use Illuminate\Auth\AuthenticationException;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -109,6 +110,21 @@ return Application::configure(basePath: dirname(__DIR__))
         });
 
         // 500: cualquier otra excepción
+        $exceptions->renderable(function (
+            HttpException $e,
+            $request
+        ) {
+            if ($request->is('api/*')) {
+                $status = $e->getStatusCode();
+                return response()->json([
+                    'status'  => $status,
+                    'message' => $e->getMessage() ?: 'Error en la solicitud.',
+                    'data'    => null,
+                ], $status);
+            }
+        });
+
+        // Fallback: cualquier otra excepción no capturada
         $exceptions->renderable(function (
             Throwable $e,
             $request

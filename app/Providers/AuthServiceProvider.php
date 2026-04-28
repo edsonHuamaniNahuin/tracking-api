@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
+use App\Models\Fleet;
 use App\Models\Tracking;
 use App\Models\Vessel;
 use App\Models\VesselStatus;
 use App\Models\VesselType;
+use App\Policies\FleetPolicy;
 use App\Policies\TrackingPolicy;
 use App\Policies\VesselPolicy;
 use App\Policies\VesselStatusPolicy;
@@ -16,8 +18,9 @@ class AuthServiceProvider extends ServiceProvider
 {
 
     protected $policies = [
-        Vessel::class   => VesselPolicy::class,
-        Tracking::class => TrackingPolicy::class,
+        Fleet::class        => FleetPolicy::class,
+        Vessel::class       => VesselPolicy::class,
+        Tracking::class     => TrackingPolicy::class,
         VesselType::class   => VesselTypePolicy::class,
         VesselStatus::class => VesselStatusPolicy::class,
     ];

@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\FleetController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\VesselController;
 use App\Http\Controllers\Api\TrackingController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\Api\VesselTypeController;
 use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\TelemetryController;
 use App\Http\Controllers\Api\DeviceController;
+use App\Http\Controllers\Api\RoleManagementController;
 use App\Http\Controllers\Api\SystemSettingController;
 
 Route::prefix('v1')->group(function () {
@@ -47,6 +49,12 @@ Route::prefix('v1')->group(function () {
         // Gestión de roles de un usuario
         Route::post('users/{user}/roles',           [UserRoleController::class, 'assign']);
         Route::delete('users/{user}/roles/{role}',  [UserRoleController::class, 'revoke']);
+
+        // Gestión de roles y permisos (solo manage_roles)
+        Route::get('roles',                             [RoleManagementController::class, 'roles']);
+        Route::get('permissions',                       [RoleManagementController::class, 'permissions']);
+        Route::get('users',                             [RoleManagementController::class, 'users']);
+        Route::put('roles/{role}/permissions',          [RoleManagementController::class, 'syncPermissions']);
 
         // Endpoints de Auth internos
         Route::post('auth/me',                      [AuthController::class, 'me']);
@@ -115,6 +123,13 @@ Route::prefix('v1')->group(function () {
         Route::get('settings/{key}',        [SystemSettingController::class, 'show']);
         Route::put('settings/{key}',        [SystemSettingController::class, 'update']);
         Route::put('settings',              [SystemSettingController::class, 'batchUpdate']);
+
+        // ── Flotas ────────────────────────────────────────────────────────────
+        // CRUD de flotas: cada usuario gestiona las suyas; admin gestiona todas.
+        Route::apiResource('fleets', FleetController::class);
+        // Asignar / quitar embarcación de una flota
+        Route::post('fleets/{fleet}/vessels/{vessel}',   [FleetController::class, 'assignVessel']);
+        Route::delete('fleets/{fleet}/vessels/{vessel}', [FleetController::class, 'removeVessel']);
     });
 
     // ── Ping del microcontrolador (autenticación por device_token) ───────────

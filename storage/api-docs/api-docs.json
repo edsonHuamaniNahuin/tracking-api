@@ -65,47 +65,6 @@
                 }
             }
         },
-        "/api/v1/vessels/{vessel}/trackings": {
-            "summary": "Operaciones sobre trackings",
-            "get": {
-                "tags": [
-                    "Trackings"
-                ],
-                "summary": "Listar trackings de una embarcación",
-                "operationId": "d23200fd3bfad797552453f17c823520",
-                "parameters": [
-                    {
-                        "name": "vessel",
-                        "in": "path",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "example": 42
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Lista de trackings",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/TrackingCollectionResponse"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Embarcación no encontrada"
-                    }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
-            }
-        },
         "/api/v1/vessels": {
             "summary": "Operaciones sobre embarcaciones",
             "get": {
@@ -118,7 +77,6 @@
                     {
                         "name": "page",
                         "in": "query",
-                        "description": "Número de página",
                         "schema": {
                             "type": "integer",
                             "example": 1
@@ -127,7 +85,6 @@
                     {
                         "name": "per_page",
                         "in": "query",
-                        "description": "Ítems por página (máx 100)",
                         "schema": {
                             "type": "integer",
                             "example": 15
@@ -136,7 +93,6 @@
                     {
                         "name": "name",
                         "in": "query",
-                        "description": "Filtrar por nombre (coincidencia parcial)",
                         "schema": {
                             "type": "string",
                             "example": "Mi Barco"
@@ -145,10 +101,25 @@
                     {
                         "name": "imo",
                         "in": "query",
-                        "description": "Filtrar por IMO (coincidencia parcial)",
                         "schema": {
                             "type": "string",
                             "example": "IMO123456"
+                        }
+                    },
+                    {
+                        "name": "type_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "example": 2
+                        }
+                    },
+                    {
+                        "name": "status_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "example": 3
                         }
                     }
                 ],
@@ -193,6 +164,134 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/VesselResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Errores de validación"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/vessel-statuses": {
+            "summary": "Operaciones sobre estados de embarcaciones",
+            "get": {
+                "tags": [
+                    "VesselStatuses"
+                ],
+                "summary": "Listar todos los estados",
+                "operationId": "0fc32d16865083255f8a14d825bb8ef2",
+                "responses": {
+                    "200": {
+                        "description": "Listado de estados",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VesselStatusCollectionResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "VesselStatuses"
+                ],
+                "summary": "Crear nuevo estado",
+                "operationId": "9b1bfc9b81ff966c917b41e4afe28776",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreVesselStatusRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Estado creado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VesselStatusResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Errores de validación"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/vessel-types": {
+            "summary": "Operaciones sobre tipos de embarcaciones",
+            "get": {
+                "tags": [
+                    "VesselTypes"
+                ],
+                "summary": "Listar todos los tipos",
+                "operationId": "178171ad5e5a811a9a82b0b726b192f4",
+                "responses": {
+                    "200": {
+                        "description": "Listado de tipos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VesselTypeCollectionResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "VesselTypes"
+                ],
+                "summary": "Crear nuevo tipo",
+                "operationId": "49736cf704741cf5537b4c00428f65af",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreVesselTypeRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Tipo creado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VesselTypeResponse"
                                 }
                             }
                         }
@@ -291,6 +390,504 @@
                             "application/json": {
                                 "schema": {
                                     "$ref": "#/components/schemas/AuthResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/dashboard/metrics": {
+            "get": {
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Obtener métricas principales del dashboard",
+                "operationId": "f0cdeb02293434de2ee4357dc6c9f2a3",
+                "responses": {
+                    "200": {
+                        "description": "Métricas principales obtenidas exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "total_vessels": {
+                                            "type": "integer",
+                                            "example": 245
+                                        },
+                                        "active_vessels": {
+                                            "type": "integer",
+                                            "example": 189
+                                        },
+                                        "total_trackings": {
+                                            "type": "integer",
+                                            "example": 15678
+                                        },
+                                        "total_users": {
+                                            "type": "integer",
+                                            "example": 25
+                                        },
+                                        "vessels_in_maintenance": {
+                                            "type": "integer",
+                                            "example": 42
+                                        },
+                                        "vessels_with_alerts": {
+                                            "type": "integer",
+                                            "example": 8
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/dashboard/vessels-type": {
+            "get": {
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Obtener distribución de embarcaciones por tipo",
+                "operationId": "ca4516b0d728f894f98cfa68920cd27a",
+                "responses": {
+                    "200": {
+                        "description": "Distribución por tipo obtenida exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "type": {
+                                                "type": "string",
+                                                "example": "Carguero"
+                                            },
+                                            "count": {
+                                                "type": "integer",
+                                                "example": 65
+                                            },
+                                            "percentage": {
+                                                "type": "number",
+                                                "format": "float",
+                                                "example": 26.5
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/dashboard/vessels-status": {
+            "get": {
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Obtener distribución de embarcaciones por estado",
+                "operationId": "9f30ee5d665f4c5d63d8cfd83b6a45d9",
+                "responses": {
+                    "200": {
+                        "description": "Distribución por estado obtenida exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "status": {
+                                                "type": "string",
+                                                "example": "Activa"
+                                            },
+                                            "count": {
+                                                "type": "integer",
+                                                "example": 189
+                                            },
+                                            "percentage": {
+                                                "type": "number",
+                                                "format": "float",
+                                                "example": 77.1
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/dashboard/vessel-positions": {
+            "get": {
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Obtener últimas posiciones de embarcaciones activas",
+                "operationId": "04ca4a2e37ee5a02885bea502a964462",
+                "responses": {
+                    "200": {
+                        "description": "Posiciones obtenidas exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "vessel_id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "vessel_name": {
+                                                "type": "string",
+                                                "example": "Atlantic Explorer 01"
+                                            },
+                                            "latitude": {
+                                                "type": "number",
+                                                "format": "float",
+                                                "example": -23.5505
+                                            },
+                                            "longitude": {
+                                                "type": "number",
+                                                "format": "float",
+                                                "example": -46.6333
+                                            },
+                                            "last_update": {
+                                                "type": "string",
+                                                "format": "datetime",
+                                                "example": "2024-06-15T14:30:00Z"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/dashboard/monthly-activity": {
+            "get": {
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Obtener actividad mensual de trackings",
+                "operationId": "df07bec58583da2dd5a09c257499b8e0",
+                "responses": {
+                    "200": {
+                        "description": "Actividad mensual obtenida exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "month": {
+                                                "type": "string",
+                                                "example": "2024-06"
+                                            },
+                                            "trackings_count": {
+                                                "type": "integer",
+                                                "example": 1250
+                                            },
+                                            "active_vessels": {
+                                                "type": "integer",
+                                                "example": 189
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/dashboard/fleet-aging": {
+            "get": {
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Obtener distribución de antigüedad de la flota",
+                "operationId": "2d44958a2cb074ce01f337a072e810a5",
+                "responses": {
+                    "200": {
+                        "description": "Distribución de antigüedad obtenida exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "age_range": {
+                                                "type": "string",
+                                                "example": "0-5 años"
+                                            },
+                                            "count": {
+                                                "type": "integer",
+                                                "example": 45
+                                            },
+                                            "percentage": {
+                                                "type": "number",
+                                                "format": "float",
+                                                "example": 18.4
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/dashboard/performance-metrics": {
+            "get": {
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Obtener métricas de rendimiento de la flota",
+                "operationId": "75f11c577f6ac22410bf08c1399bed92",
+                "responses": {
+                    "200": {
+                        "description": "Métricas de rendimiento obtenidas exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "avg_speed": {
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 18.5
+                                        },
+                                        "avg_fuel_consumption": {
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 245.7
+                                        },
+                                        "total_maintenance_count": {
+                                            "type": "integer",
+                                            "example": 128
+                                        },
+                                        "total_safety_incidents": {
+                                            "type": "integer",
+                                            "example": 12
+                                        },
+                                        "efficiency_score": {
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 87.3
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/dashboard/all-metrics": {
+            "get": {
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Obtener todas las métricas del dashboard en una sola respuesta",
+                "operationId": "f1aa1e3b2da57f9c1636afd6199abf17",
+                "responses": {
+                    "200": {
+                        "description": "Todas las métricas obtenidas exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "main_metrics": {
+                                            "type": "object"
+                                        },
+                                        "vessels_by_type": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "vessels_by_status": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "vessel_positions": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "monthly_activity": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "fleet_aging": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        },
+                                        "performance_metrics": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/vessels-types": {
+            "get": {
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Obtener listado completo de tipos de embarcaciones para formularios",
+                "operationId": "7afdf362382b5ab40e2dd3771d41e29b",
+                "responses": {
+                    "200": {
+                        "description": "Tipos de embarcaciones obtenidos exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "Carguero"
+                                            },
+                                            "slug": {
+                                                "type": "string",
+                                                "example": "carguero"
+                                            },
+                                            "created_at": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            },
+                                            "updated_at": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/vessels-status": {
+            "get": {
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Obtener listado completo de estados de embarcaciones para formularios",
+                "operationId": "de569fb538956ed0d37772e52b1d2dc6",
+                "responses": {
+                    "200": {
+                        "description": "Estados de embarcaciones obtenidos exitosamente",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "Activa"
+                                            },
+                                            "slug": {
+                                                "type": "string",
+                                                "example": "activa"
+                                            },
+                                            "created_at": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            },
+                                            "updated_at": {
+                                                "type": "string",
+                                                "format": "date-time"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
                                 }
                             }
                         }
@@ -707,36 +1304,649 @@
                 ]
             }
         },
+        "/api/v1/roles": {
+            "get": {
+                "tags": [
+                    "Roles & Permissions"
+                ],
+                "summary": "Listar roles con sus permisos",
+                "operationId": "2463b258c866c6f88ecdae770fdacb3d",
+                "responses": {
+                    "200": {
+                        "description": "Lista de roles",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Administrator"
+                                                    },
+                                                    "permissions": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "properties": {
+                                                                "name": {
+                                                                    "type": "string",
+                                                                    "example": "manage_users"
+                                                                },
+                                                                "label": {
+                                                                    "type": "string",
+                                                                    "example": "Gestionar usuarios"
+                                                                }
+                                                            },
+                                                            "type": "object"
+                                                        }
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Sin permiso"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/permissions": {
+            "get": {
+                "tags": [
+                    "Roles & Permissions"
+                ],
+                "summary": "Listar todos los permisos disponibles",
+                "operationId": "f55c182e89336723acf28d4dee34fff3",
+                "responses": {
+                    "200": {
+                        "description": "Lista de permisos",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "manage_users"
+                                                    },
+                                                    "label": {
+                                                        "type": "string",
+                                                        "example": "Gestionar usuarios"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Sin permiso"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/users": {
+            "get": {
+                "tags": [
+                    "Roles & Permissions"
+                ],
+                "summary": "Listar usuarios con sus roles asignados",
+                "operationId": "99f96c8c0c3249d27180d5891c1cbbea",
+                "responses": {
+                    "200": {
+                        "description": "Lista de usuarios con roles",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Juan Perez"
+                                                    },
+                                                    "email": {
+                                                        "type": "string",
+                                                        "example": "juan@example.com"
+                                                    },
+                                                    "avatar": {
+                                                        "type": "string",
+                                                        "example": null,
+                                                        "nullable": true
+                                                    },
+                                                    "roles": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "string",
+                                                            "example": "Operator"
+                                                        }
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Sin permiso"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/roles/{role}/permissions": {
+            "put": {
+                "tags": [
+                    "Roles & Permissions"
+                ],
+                "summary": "Sincronizar los permisos de un rol",
+                "description": "Reemplaza completamente los permisos del rol indicado.",
+                "operationId": "f80b27a31867c27a951fe9d019f4c84c",
+                "parameters": [
+                    {
+                        "name": "role",
+                        "in": "path",
+                        "description": "Nombre del rol",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "example": "Manager"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "permissions"
+                                ],
+                                "properties": {
+                                    "permissions": {
+                                        "description": "Lista de nombres de permisos a asignar al rol",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "example": "view_vessels"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Permisos actualizados",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "integer",
+                                            "example": 200
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Permisos de Manager actualizados."
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "role": {
+                                                    "type": "string",
+                                                    "example": "Manager"
+                                                },
+                                                "permissions": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "example": "view_vessels"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Sin permiso"
+                    },
+                    "404": {
+                        "description": "Rol no encontrado"
+                    },
+                    "422": {
+                        "description": "Errores de validacion"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/telemetry": {
+            "post": {
+                "tags": [
+                    "Telemetría"
+                ],
+                "summary": "Recibir ping de telemetría de un microcontrolador",
+                "operationId": "fc411c4dc32491b70dd906837fbea78f",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "vessel_id",
+                                    "lat",
+                                    "lng"
+                                ],
+                                "properties": {
+                                    "vessel_id": {
+                                        "type": "integer",
+                                        "example": 5
+                                    },
+                                    "lat": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": -12.0921
+                                    },
+                                    "lng": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": -77.0282
+                                    },
+                                    "speed": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 8.5
+                                    },
+                                    "course": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 270
+                                    },
+                                    "fuel_level": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 78.4
+                                    },
+                                    "rpm": {
+                                        "type": "integer",
+                                        "example": 1200
+                                    },
+                                    "voltage": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 12.6
+                                    },
+                                    "raw_data": {
+                                        "description": "Payload Signal K completo",
+                                        "type": "object"
+                                    },
+                                    "recorded_at": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "202": {
+                        "description": "Telemetría aceptada y encolada para procesamiento"
+                    },
+                    "422": {
+                        "description": "Datos de validación incorrectos"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/vessels/{vessel}/telemetry/latest": {
+            "get": {
+                "tags": [
+                    "Telemetría"
+                ],
+                "summary": "Última posición en tiempo real de una embarcación (desde caché Redis)",
+                "operationId": "06911cb632aaa2f139481ebe8ad292ff",
+                "parameters": [
+                    {
+                        "name": "vessel",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Última posición conocida"
+                    },
+                    "404": {
+                        "description": "Sin datos de telemetría disponibles"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/vessels/{vessel}/telemetry/weather": {
+            "get": {
+                "tags": [
+                    "Telemetría"
+                ],
+                "summary": "Condiciones meteorológicas actuales para la posición del barco",
+                "operationId": "b46df2d7c4519a4cab726d405748abc0",
+                "parameters": [
+                    {
+                        "name": "vessel",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Datos meteo actuales"
+                    },
+                    "404": {
+                        "description": "Sin posición conocida para el barco"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/vessels/{vessel}/telemetry/route": {
+            "get": {
+                "tags": [
+                    "Telemetría"
+                ],
+                "summary": "Ruta marítima óptima desde la posición actual hasta un destino",
+                "operationId": "19d4c8d10b9d647130755f406cf8fd66",
+                "parameters": [
+                    {
+                        "name": "vessel",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "dest_lat",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "dest_lng",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "speed_knots",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "number",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Ruta óptima"
+                    },
+                    "422": {
+                        "description": "Parámetros de destino incorrectos"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/v1/trackings": {
+            "get": {
+                "tags": [
+                    "Trackings"
+                ],
+                "summary": "Listar trackings con filtros por permisos de usuario",
+                "operationId": "cbe94ce412ce140de41669b1fc36ff45",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Número de página",
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Elementos por página (máximo 100)",
+                        "schema": {
+                            "type": "integer",
+                            "example": 15
+                        }
+                    },
+                    {
+                        "name": "vessel_id",
+                        "in": "query",
+                        "description": "Filtrar por ID de embarcación",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "date_from",
+                        "in": "query",
+                        "description": "Fecha desde (Y-m-d)",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "date_to",
+                        "in": "query",
+                        "description": "Fecha hasta (Y-m-d)",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de trackings obtenida exitosamente"
+                    },
+                    "403": {
+                        "description": "No autorizado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
             "post": {
                 "tags": [
                     "Trackings"
                 ],
-                "summary": "Crear nuevo tracking",
+                "summary": "Crear un nuevo tracking",
                 "operationId": "bf41e5d565ffc2eabbb7f3207b268924",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/StoreTrackingRequest"
+                                "required": [
+                                    "vessel_id",
+                                    "latitude",
+                                    "longitude",
+                                    "tracked_at"
+                                ],
+                                "properties": {
+                                    "vessel_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "latitude": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": -12.0464
+                                    },
+                                    "longitude": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": -77.0428
+                                    },
+                                    "tracked_at": {
+                                        "type": "string",
+                                        "format": "date-time",
+                                        "example": "2025-06-17T10:30:00Z"
+                                    }
+                                },
+                                "type": "object"
                             }
                         }
                     }
                 },
                 "responses": {
                     "201": {
-                        "description": "Tracking creado",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/TrackingResponse"
-                                }
-                            }
-                        }
+                        "description": "Tracking creado exitosamente"
+                    },
+                    "403": {
+                        "description": "No autorizado"
                     },
                     "422": {
-                        "description": "Errores de validación"
+                        "description": "Datos de validación incorrectos"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/vessels/{vessel}/trackings": {
+            "get": {
+                "tags": [
+                    "Trackings"
+                ],
+                "summary": "Listar trackings de una embarcación específica",
+                "operationId": "1e00b485ba163739e37d13aa6646ad92",
+                "parameters": [
+                    {
+                        "name": "vessel",
+                        "in": "path",
+                        "description": "ID de la embarcación",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Trackings de la embarcación obtenidos exitosamente"
+                    },
+                    "403": {
+                        "description": "No autorizado"
+                    },
+                    "404": {
+                        "description": "Embarcación no encontrada"
                     }
                 },
                 "security": [
@@ -751,29 +1961,25 @@
                 "tags": [
                     "Trackings"
                 ],
-                "summary": "Mostrar detalle de un tracking",
+                "summary": "Mostrar un tracking específico",
                 "operationId": "2efe8e8aea41fe70e0fd9fbd14396c73",
                 "parameters": [
                     {
                         "name": "tracking",
                         "in": "path",
+                        "description": "ID del tracking",
                         "required": true,
                         "schema": {
-                            "type": "integer",
-                            "example": 125
+                            "type": "integer"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Detalle de tracking",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/TrackingResponse"
-                                }
-                            }
-                        }
+                        "description": "Tracking obtenido exitosamente"
+                    },
+                    "403": {
+                        "description": "No autorizado"
                     },
                     "404": {
                         "description": "Tracking no encontrado"
@@ -789,16 +1995,16 @@
                 "tags": [
                     "Trackings"
                 ],
-                "summary": "Actualizar tracking",
+                "summary": "Actualizar un tracking",
                 "operationId": "bbea00240e337090f1d98e454000ee0c",
                 "parameters": [
                     {
                         "name": "tracking",
                         "in": "path",
+                        "description": "ID del tracking",
                         "required": true,
                         "schema": {
-                            "type": "integer",
-                            "example": 125
+                            "type": "integer"
                         }
                     }
                 ],
@@ -807,27 +2013,34 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/UpdateTrackingRequest"
+                                "properties": {
+                                    "latitude": {
+                                        "type": "number",
+                                        "format": "float"
+                                    },
+                                    "longitude": {
+                                        "type": "number",
+                                        "format": "float"
+                                    },
+                                    "tracked_at": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    }
+                                },
+                                "type": "object"
                             }
                         }
                     }
                 },
                 "responses": {
                     "200": {
-                        "description": "Tracking actualizado",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/TrackingResponse"
-                                }
-                            }
-                        }
+                        "description": "Tracking actualizado exitosamente"
+                    },
+                    "403": {
+                        "description": "No autorizado"
                     },
                     "404": {
                         "description": "Tracking no encontrado"
-                    },
-                    "422": {
-                        "description": "Errores de validación"
                     }
                 },
                 "security": [
@@ -840,25 +2053,94 @@
                 "tags": [
                     "Trackings"
                 ],
-                "summary": "Eliminar tracking",
+                "summary": "Eliminar un tracking",
                 "operationId": "b39d0a2d887555d4e91c0ba0362c5dc6",
                 "parameters": [
                     {
                         "name": "tracking",
                         "in": "path",
+                        "description": "ID del tracking",
                         "required": true,
                         "schema": {
-                            "type": "integer",
-                            "example": 125
+                            "type": "integer"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Tracking eliminado"
+                        "description": "Tracking eliminado exitosamente"
+                    },
+                    "403": {
+                        "description": "No autorizado"
                     },
                     "404": {
                         "description": "Tracking no encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/trackings/recent": {
+            "get": {
+                "tags": [
+                    "Trackings"
+                ],
+                "summary": "Obtener los trackings más recientes",
+                "operationId": "0bdb30d5618a32c85d914ec5ee81f843",
+                "parameters": [
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "description": "Número máximo de trackings (máximo 50)",
+                        "schema": {
+                            "type": "integer",
+                            "example": 20
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Trackings recientes obtenidos exitosamente"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/vessels/{vessel}/tracking-days": {
+            "get": {
+                "tags": [
+                    "Trackings"
+                ],
+                "summary": "Días únicos con registros de tracking para una embarcación",
+                "operationId": "2cac3258a4a0059ed5619d086b624fe0",
+                "parameters": [
+                    {
+                        "name": "vessel",
+                        "in": "path",
+                        "description": "ID de la embarcación",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Lista de fechas (YYYY-MM-DD) con datos"
+                    },
+                    "403": {
+                        "description": "No autorizado"
+                    },
+                    "404": {
+                        "description": "Embarcación no encontrada"
                     }
                 },
                 "security": [
@@ -1062,6 +2344,423 @@
                 "responses": {
                     "200": {
                         "description": "Embarcación eliminada"
+                    },
+                    "404": {
+                        "description": "No encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/vessel-metrics": {
+            "get": {
+                "tags": [
+                    "VesselMetrics"
+                ],
+                "summary": "Listar métricas (paginado). Opcionalmente filtrar por vessel_id",
+                "operationId": "b333b0fc7b53102aca6e2e33ec226dca",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer",
+                            "example": 15
+                        }
+                    },
+                    {
+                        "name": "vessel_id",
+                        "in": "query",
+                        "description": "Filtrar por vessel_id",
+                        "schema": {
+                            "type": "integer",
+                            "example": 5
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Métricas paginadas",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PaginatedResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "VesselMetrics"
+                ],
+                "summary": "Crear nueva métrica de embarcación",
+                "operationId": "0f9b63c1111fe067a4a062642e724ecb",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreVesselMetricRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Métrica creada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/vessel-metrics/{metric}": {
+            "get": {
+                "tags": [
+                    "VesselMetrics"
+                ],
+                "summary": "Obtener detalle de una métrica",
+                "operationId": "0100a912be9284ac5ac5feafdef6658e",
+                "parameters": [
+                    {
+                        "name": "metric",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalle de la métrica"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "VesselMetrics"
+                ],
+                "summary": "Actualizar una métrica existente",
+                "operationId": "6c48f803c3473432d2f2bde2afc21fcc",
+                "parameters": [
+                    {
+                        "name": "metric",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateVesselMetricRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Métrica actualizada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "VesselMetrics"
+                ],
+                "summary": "Eliminar una métrica",
+                "operationId": "ab517de3728d45b9b71959794e7982d1",
+                "parameters": [
+                    {
+                        "name": "metric",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Métrica eliminada"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/vessel-statuses/{status}": {
+            "get": {
+                "tags": [
+                    "VesselStatuses"
+                ],
+                "summary": "Mostrar detalle de un estado",
+                "operationId": "9bebaaa8418d43a242b17b785ac7b216",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalle de estado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VesselStatusResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "VesselStatuses"
+                ],
+                "summary": "Actualizar un estado",
+                "operationId": "42ca293c29c4bf4f989f271a1d7943b0",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateVesselStatusRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Estado actualizado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VesselStatusResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No encontrado"
+                    },
+                    "422": {
+                        "description": "Errores de validación"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "VesselStatuses"
+                ],
+                "summary": "Eliminar un estado",
+                "operationId": "42bdef2cfe03af401cdf5c943cd3b773",
+                "parameters": [
+                    {
+                        "name": "status",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Estado eliminado"
+                    },
+                    "404": {
+                        "description": "No encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/v1/vessel-types/{type}": {
+            "get": {
+                "tags": [
+                    "VesselTypes"
+                ],
+                "summary": "Mostrar detalle de un tipo",
+                "operationId": "8e73e63a98f54c1e1429c6784ffadffa",
+                "parameters": [
+                    {
+                        "name": "type",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Detalle de tipo",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VesselTypeResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No encontrado"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "VesselTypes"
+                ],
+                "summary": "Actualizar un tipo",
+                "operationId": "74a4e816e5d8cf497e8271e767c6946f",
+                "parameters": [
+                    {
+                        "name": "type",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateVesselTypeRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Tipo actualizado",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/VesselTypeResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No encontrado"
+                    },
+                    "422": {
+                        "description": "Errores de validación"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "VesselTypes"
+                ],
+                "summary": "Eliminar un tipo",
+                "operationId": "59281a9935431f4487b5bd330cb90e34",
+                "parameters": [
+                    {
+                        "name": "type",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Tipo eliminado"
                     },
                     "404": {
                         "description": "No encontrado"
@@ -1360,6 +3059,132 @@
                 },
                 "type": "object"
             },
+            "VesselStatusCollectionResponse": {
+                "properties": {
+                    "status": {
+                        "type": "integer",
+                        "example": 200
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Listado de estados"
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "id": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "example": "Activa"
+                                },
+                                "slug": {
+                                    "type": "string",
+                                    "example": "activa"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "VesselStatusResponse": {
+                "properties": {
+                    "status": {
+                        "type": "integer",
+                        "example": 200
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Estado creado"
+                    },
+                    "data": {
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "name": {
+                                "type": "string",
+                                "example": "Activa"
+                            },
+                            "slug": {
+                                "type": "string",
+                                "example": "activa"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "VesselTypeCollectionResponse": {
+                "properties": {
+                    "status": {
+                        "type": "integer",
+                        "example": 200
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Listado de tipos"
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "id": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "example": "Pesquero"
+                                },
+                                "slug": {
+                                    "type": "string",
+                                    "example": "pesquero"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "VesselTypeResponse": {
+                "properties": {
+                    "status": {
+                        "type": "integer",
+                        "example": 200
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Tipo creado"
+                    },
+                    "data": {
+                        "properties": {
+                            "id": {
+                                "type": "integer",
+                                "example": 1
+                            },
+                            "name": {
+                                "type": "string",
+                                "example": "Pesquero"
+                            },
+                            "slug": {
+                                "type": "string",
+                                "example": "pesquero"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
             "LoginRequest": {
                 "required": [
                     "email",
@@ -1375,6 +3200,84 @@
                         "type": "string",
                         "format": "password",
                         "example": "secret123"
+                    }
+                },
+                "type": "object"
+            },
+            "StoreVesselMetricRequest": {
+                "required": [
+                    "vessel_id",
+                    "period"
+                ],
+                "properties": {
+                    "vessel_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "period": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2026-04-01"
+                    },
+                    "avg_speed": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 12.5,
+                        "nullable": true
+                    },
+                    "fuel_consumption": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 320,
+                        "nullable": true
+                    },
+                    "maintenance_count": {
+                        "type": "integer",
+                        "example": 2,
+                        "nullable": true
+                    },
+                    "safety_incidents": {
+                        "type": "integer",
+                        "example": 0,
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateVesselMetricRequest": {
+                "properties": {
+                    "vessel_id": {
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": true
+                    },
+                    "period": {
+                        "type": "string",
+                        "format": "date",
+                        "example": "2026-04-01",
+                        "nullable": true
+                    },
+                    "avg_speed": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 12.5,
+                        "nullable": true
+                    },
+                    "fuel_consumption": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 320,
+                        "nullable": true
+                    },
+                    "maintenance_count": {
+                        "type": "integer",
+                        "example": 2,
+                        "nullable": true
+                    },
+                    "safety_incidents": {
+                        "type": "integer",
+                        "example": 0,
+                        "nullable": true
                     }
                 },
                 "type": "object"
@@ -1481,6 +3384,32 @@
                 },
                 "type": "object"
             },
+            "StoreVesselStatusRequest": {
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "Activa"
+                    }
+                },
+                "type": "object"
+            },
+            "StoreVesselTypeRequest": {
+                "required": [
+                    "name"
+                ],
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "Pesquero"
+                    }
+                },
+                "type": "object"
+            },
             "UpdatePreferencesRequest": {
                 "properties": {
                     "newsletter_subscribed": {
@@ -1562,6 +3491,26 @@
                     }
                 },
                 "type": "object"
+            },
+            "UpdateVesselStatusRequest": {
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "Mantenimiento"
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateVesselTypeRequest": {
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 255,
+                        "example": "Pesquero Modificado"
+                    }
+                },
+                "type": "object"
             }
         }
     },
@@ -1571,12 +3520,24 @@
             "description": "Endpoints para iniciar sesión, refrescar token y cerrar sesión"
         },
         {
+            "name": "Dashboard",
+            "description": "Endpoints para el dashboard de métricas y estadísticas"
+        },
+        {
             "name": "Profile",
             "description": "Endpoints para gestión de perfil de usuario"
         },
         {
+            "name": "Roles & Permissions",
+            "description": "Gestion de roles, permisos y asignacion de roles a usuarios"
+        },
+        {
+            "name": "Telemetría",
+            "description": "Recepción y consulta de datos de telemetría IoT de las embarcaciones"
+        },
+        {
             "name": "Trackings",
-            "description": "CRUD de registros de ubicación (trackings)"
+            "description": "CRUD de registros de ubicación (trackings) con control de permisos"
         },
         {
             "name": "UserRoles",
@@ -1585,6 +3546,18 @@
         {
             "name": "Vessels",
             "description": "CRUD de embarcaciones"
+        },
+        {
+            "name": "VesselStatuses",
+            "description": "CRUD de estados de embarcaciones"
+        },
+        {
+            "name": "VesselTypes",
+            "description": "CRUD de tipos de embarcaciones"
+        },
+        {
+            "name": "VesselMetrics",
+            "description": "VesselMetrics"
         }
     ]
 }
