@@ -129,8 +129,57 @@ do_deploy() {
     # 7. Reiniciar servicios web
     log_step "REINICIO WEB SERVER"
     sudo systemctl restart php-fpm.service 2>/dev/null || true
-    sudo systemctl reload apache2 2>/dev/null || true
-    log_ok "PHP-FPM y Apache reiniciados"
+
+    # 7a. Garantizar proxy WebSocket en el VirtualHost SSL de Apache.
+    #     Solo modifica api.nautic.run-le-ssl.conf — ningún otro conf se toca.
+    #     El bloque se inserta una única vez (idempotente: verifica antes de insertar).
+    log_step "APACHE — PROXY WEBSOCKET REVERB"
+    SSL_CONF="/etc/apache2/sites-available/api.nautic.run-le-ssl.conf"
+    if [ -f "$SSL_CONF" ]; then
+        if ! grep -q "proxy_wstunnel\|ProxyPass.*8081\|Reverb WebSocket" "$SSL_CONF"; then
+            sudo a2enmod proxy proxy_http proxy_wstunnel rewrite 2>/dev/null || true
+            sudo sed -i 's|</VirtualHost>|    # Reverb WebSocket — wss://api.nautic.run/app/{key}\n    RewriteEngine On\n    RewriteCond %{HTTP:Upgrade} websocket [NC]\n    RewriteCond %{HTTP:Connection} upgrade [NC]\n    RewriteRule ^/app(.*)$ ws://127.0.0.1:8081/app$1 [P,L]\n\n    ProxyPass        /app  ws://127.0.0.1:8081/app\n    ProxyPassReverse /app  ws://127.0.0.1:8081/app\n</VirtualHost>|' "$SSL_CONF"
+            log_ok "Proxy WebSocket insertado en $SSL_CONF"
+        else
+            log_info "Proxy WebSocket ya configurado — omitiendo"
+        fi
+        sudo apache2ctl configtest 2>&1 && sudo systemctl reload apache2 2>/dev/null || true
+        log_ok "Apache recargado"
+    else
+        log_warn "$SSL_CONF no encontrado — proxy WebSocket no configurado"
+    fi
+
+    # 7b. Reverb WebSocket server (se crea el servicio si no existe — idempotente)
+    log_step "REVERB WEBSOCKET"
+    if ! systemctl list-unit-files reverb.service &>/dev/null || ! systemctl is-enabled --quiet reverb.service 2>/dev/null; then
+        log_info "reverb.service no encontrado — creando servicio systemd..."
+        PHP_BIN=$(which php 2>/dev/null || echo "/usr/bin/php")
+        sudo tee /etc/systemd/system/reverb.service > /dev/null << REVERB_UNIT
+[Unit]
+Description=Laravel Reverb WebSocket Server
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/tracking-api
+ExecStart=${PHP_BIN} artisan reverb:start --host=0.0.0.0 --port=8081 --no-interaction
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+REVERB_UNIT
+        sudo systemctl daemon-reload
+        sudo systemctl enable reverb.service
+        sudo systemctl start reverb.service
+        log_ok "reverb.service creado y arrancado"
+    else
+        sudo systemctl restart reverb.service
+        log_ok "Reverb reiniciado"
+    fi
 
     # 8. Health check
     do_health
@@ -144,8 +193,8 @@ do_deploy() {
 do_status() {
     log_step "ESTADO DE SERVICIOS"
     echo ""
-    for svc in php-fpm apache2; do
-        if systemctl is-active --quiet "$svc" 2>/dev/null; then
+    for svc in php-fpm apache2 reverb; do
+        if systemctl is-active --quiet "$svc.service" 2>/dev/null; then
             echo -e "  ${GREEN}●${NC} ${svc} — activo"
         else
             echo -e "  ${RED}●${NC} ${svc} — inactivo"

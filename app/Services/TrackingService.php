@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\TrackingCreated;
 use App\Models\Tracking;
 use App\Models\Vessel;
 use App\Models\User;
@@ -57,6 +58,10 @@ class TrackingService
     {
         $tracking = Tracking::create($data);
         $tracking->load('vessel.vesselType', 'vessel.vesselStatus', 'vessel.user');
+
+        // Notificar en tiempo real al frontend vía Reverb (WebSocket).
+        // El evento se envía en el canal private-vessel.{vessel_id}.tracking.
+        broadcast(new TrackingCreated($tracking));
 
         return $tracking;
     }

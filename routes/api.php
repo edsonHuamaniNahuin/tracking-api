@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Broadcasting\BroadcastController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\FleetController;
 use App\Http\Controllers\Api\ProfileController;
@@ -15,6 +16,12 @@ use App\Http\Controllers\Api\TelemetryController;
 use App\Http\Controllers\Api\DeviceController;
 use App\Http\Controllers\Api\RoleManagementController;
 use App\Http\Controllers\Api\SystemSettingController;
+
+// ── Autorización de canales privados de Reverb (WebSocket) ───────────────────
+// Se registra fuera del prefijo /v1 para que la URL sea: /api/broadcasting/auth
+// Usa el guard auth:api (JWT Bearer) para autenticar al suscriptor.
+Route::post('broadcasting/auth', [BroadcastController::class, 'authenticate'])
+    ->middleware('auth:api');
 
 Route::prefix('v1')->group(function () {
     //

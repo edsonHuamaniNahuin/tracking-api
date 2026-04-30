@@ -76,6 +76,14 @@ SESSION_DRIVER=cookie
 CACHE_STORE=file
 QUEUE_CONNECTION=sync
 
+BROADCAST_CONNECTION=reverb
+REVERB_APP_ID=GENERA_CON_php_artisan_reverb_install
+REVERB_APP_KEY=GENERA_CON_php_artisan_reverb_install
+REVERB_APP_SECRET=GENERA_CON_php_artisan_reverb_install
+REVERB_HOST=0.0.0.0
+REVERB_PORT=8081
+REVERB_SCHEME=http
+
 FRONTEND_URL=https://nautic.run
 EOF
 
@@ -107,7 +115,36 @@ ln -sf /etc/nginx/sites-available/api.nautic.run /etc/nginx/sites-enabled/
 rm -f /etc/nginx/sites-enabled/default
 nginx -t && systemctl reload nginx
 
-# ── 10. Build y levantar Docker ─────────────────────────────────────────────
+# ── 10b. Habilitar módulos Nginx para WebSocket (ya incluido en el build estándar) ─────
+# Si usas Apache en lugar de Nginx:
+#   a2enmod proxy proxy_http proxy_wstunnel headers && systemctl reload apache2
+
+# ── 11. Servicio systemd para Reverb WebSocket ────────────────────────────
+echo "▶ Creando servicio systemd para Reverb..."
+cat > /etc/systemd/system/reverb.service << 'REVERB_SERVICE'
+[Unit]
+Description=Laravel Reverb WebSocket Server
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/tracking-api
+ExecStart=/usr/local/php82/bin/php artisan reverb:start --host=0.0.0.0 --port=8081 --no-interaction
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+REVERB_SERVICE
+
+systemctl daemon-reload
+systemctl enable reverb.service
+systemctl start reverb.service
+echo "✅ Reverb habilitado y arrancado (puerto interno 8081)"
+
 echo "▶ Construyendo y levantando contenedor..."
 cd /var/www/tracking-api
 docker compose -f docker-compose.prod.yml build
